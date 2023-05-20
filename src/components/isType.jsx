@@ -4,7 +4,7 @@ const isNumber = (char) =>{
 }
 
 const isOperator = (char) =>{
-    return char == '+' || char == '-'  || char == '/' || char == '*' || char == '%'
+    return char == '+' || char == '-'  || char == '/' || char == 'x' || char == '%'
 }
 
 export {isNumber, isOperator}

@@ -1,12 +1,11 @@
 import { useState } from 'react'
 import './App.css'
 import { isNumber, isOperator } from './components/isType.jsx'
+import {reset} from './components/resetFunction.jsx'
+import { negative } from './components/negateResult'
+import { sum,dif,div,mult,mod } from './components/operations'
+import { deleteLast } from './components/delFunction'
 function App() {
-/*
-  const prueba = "1+2"
-  for(let i=0; i < prueba.length; i++){
-    console.log(prueba.charAt(i))
-  }*/
 
   const [Ans, setAns] = useState(0)
   const [number1, setNumber1] = useState('')
@@ -17,7 +16,6 @@ function App() {
 
   function addAns(){
     const input = document.getElementById("inputspan")
-    const avalue = Ans
     if(operator == ""){
       setNumber1(Ans)
       setAns('')
@@ -25,8 +23,10 @@ function App() {
       setNumber2(Ans)
       setAns('')
     }
-    const anode = document.createTextNode(avalue)
-    input.appendChild(anode)
+    if(input.childNodes.length <= 9){
+      const anode = document.createTextNode('Ans')
+      input.appendChild(anode)
+    }
   }
   
   function addChar(char){
@@ -80,45 +80,11 @@ function App() {
     }
   }
 
-  function reset(){
-    const input = document.getElementById("inputspan")
-    const res = document.createTextNode("")
-    input.replaceChildren(res)
-    setNumber1('') 
-    setNumber2('')
-    setOperator('')
-    setBuilding('')
-    setCanChange(true)
-    const output = document.getElementById("outputspan")
-    output.replaceChildren(0)
-  }
-
-  function deleteLast(){
-    const input = document.getElementById("inputspan")
-    const lastchild = input.lastChild
-    input.removeChild(lastchild)
-    let newnum = ''
-    if(operator == ''){
-      for(let i = 0; i < number1.length - 1; i++){
-        newnum += number1.charAt(i)
-      }
-      setNumber1(newnum)
-    }
-    else{
-      for(let i = 0; i < number2.length - 1; i++){
-        newnum += number2.charAt(i)
-      }
-      setNumber2(newnum)
-    }
-  }
-
   function calculate(){
     const num1 = parseFloat(number1)
     setNumber1('')
     let num2 = 0
     if(building != ''){
-      console.log(building)
-      console.log(number1)
       num2 = parseFloat(building)
       setNumber2('')
       setBuilding('')
@@ -132,55 +98,50 @@ function App() {
     switch(operator){
       case '+':
         if(num1.toString() != 'NaN'){
-          res = num1 + num2
+          res = sum(num1,num2)
         }
         else{
-          res = parseFloat(Ans) + num2
+          res = sum(parseFloat(Ans),num2)
         }
       break
 
       case '-':
         if(num1.toString() != 'NaN'){
-          res = num1 - num2
+          res = dif(num1,num2)
           
         }
         else{
-          res = Ans - num2
+          res = dif(parseFloat(Ans),num2)
         }
       break
 
       case 'x':
         if(num1.toString() != 'NaN'){
-          res = num1 * num2
+          res = mult(num1,num2)
         }
         else{
-          res = Ans * num2
+          res = mult(parseFloat(Ans),num2)
         }
       break
 
       case '/':
         if(num1.toString() != 'NaN'){
-          res = num1 / num2
+          res = div(num1,num2)
         }
         else{
-          res = Ans / num2
+          res = div(parseFloat(Ans),num2)
         }
       break
 
       case '%':
         if(num1.toString() != 'NaN'){
-          const temp = parseInt(num1/num2)
-          res = num1 - temp * num2
+          res = mod(num1,num2)
+          console.log(res)
         }
         else{
-          const temp = parseInt(Ans/num2)
-          res = Ans - temp * num2
+          res = mod(parseFloat(Ans),num2)
         }
     }
-    if(!Number.isInteger(res))
-      res = res.toFixed(7)
-    if(res < 0 || res > 999999999)
-      res = "ERROR."
     setOperator('')
     setCanChange(true)
     setAns(res)
@@ -188,11 +149,58 @@ function App() {
     output.replaceChildren(res)
   }
 
-  function negative(){
-    setAns(Ans * -1)
-    const newans = Ans * -1
-    const output = document.getElementById("outputspan")
-    output.replaceChildren(newans)
+  document.onkeydown = (event) =>{
+    switch(event.key){
+      case '1':
+        addChar(1)
+        break
+      case '2':
+        addChar(2)
+        break
+      case '3':
+        addChar(3)
+        break
+      case '4':
+        addChar(4)
+        break
+      case '5':
+        addChar(5)
+        break
+      case '6':
+        addChar(6)
+        break
+      case '7':
+        addChar(7)
+        break
+      case '8':
+        addChar(8)
+        break
+      case '9':
+        addChar(9)
+        break
+      case '0':
+        addChar(0)
+        break
+      case '+':
+        addChar('+')
+        break
+      case '-':
+        addChar('-')
+        break
+      case '/':
+        addChar('/')
+        break
+      case '*':
+        addChar('x')
+        break
+      case '.':
+        addChar('.')
+        break
+      case 'Enter':
+        calculate()
+        break
+        
+    }
   }
 
   return (
@@ -209,8 +217,30 @@ function App() {
             <button className='b7' onClick={() => addChar('7')}>7</button>
             <input className='b8' type='submit' value={8} onClick={() => addChar('8')}></input>
             <input className='b9' type='submit' value={9} onClick={() => addChar('9')}></input>
-            <input className='del' type='submit' value={"DEL"} onClick={deleteLast}></input>
-            <input className='ac' type='submit' value={"AC"} onClick={reset}></input>
+            <input className='del' type='submit' value={"DEL"} onClick={() =>{
+              deleteLast()
+              let newnum = ''
+              if(operator == ''){
+                for(let i = 0; i < number1.length - 1; i++){
+                  newnum += number1.charAt(i)
+                }
+                setNumber1(newnum)
+              }
+              else{
+                for(let i = 0; i < number2.length - 1; i++){
+                  newnum += number2.charAt(i)
+                }
+                setNumber2(newnum)
+              }
+            }}></input>
+            <input className='ac' type='submit' value={"AC"} onClick={() =>{
+              setNumber1('') 
+              setNumber2('')
+              setOperator('')
+              setBuilding('')
+              setCanChange(true)
+              reset()
+            }}></input>
           </div>
           <div className="fila2">
             <input className='b4' type='submit' value={4} onClick={() => addChar('4')}></input>
@@ -229,7 +259,10 @@ function App() {
           <div className="fila4">
             <input className='b0' type='submit' value={0} onClick={() => addChar('0')}></input>
             <input className='dot' type='submit' value={"."} onClick={() => addChar(".")}></input>
-            <input className='mm' type='submit' value={"+/-"} onClick={negative}></input>
+            <input className='mm' type='submit' value={"+/-"} onClick={() =>{
+              negative(Ans)
+              setAns(Ans * -1)
+            }}></input>
             <input className='ans' type='submit' value={"Ans"} onClick={addAns}></input>
             <input className='mod' type='submit' value={"%"} onClick={() => addChar("%")}></input>
           </div>
